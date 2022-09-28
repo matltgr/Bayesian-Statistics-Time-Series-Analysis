@@ -8,9 +8,26 @@ date: "`r Sys.Date()`"
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, tidy = TRUE, tidy.opts = list(width.cutoff = 80))
 ```
 
-## R Markdown
+## Introduction
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Data that will be studied is the time serie of the research term "summer" in the US over the last 5 years. As shown below, data is sampled at a weekly rate.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r}
+library(gtrendsR)
+library(ggplot2)
+library(dplyr)
 
+res <- gtrends("summer", geo = c("US"), time = "today+5-y")
+ts <- res$interest_over_time %>% select(date, hits)
+head(ts)
+```
+
+The time serie seems to follow a quasi-periodic structure with an annual rate
+
+```{r}
+ggplot(ts, aes(x = date, y = hits)) + geom_point(size = 1.5, color = 'red3', alpha = 0.2, fill = 'red') + geom_line(size = 0.8, color = 'red3', alpha = 0.9) + labs(title = 'Researches of the word "summer" in the US over the past 5 years')
+```
+
+## Model choice
+
+To reproduce this seasonal behaviour, we will use a NDLM
